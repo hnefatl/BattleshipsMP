@@ -1,6 +1,9 @@
+#include <iostream>
+
 #include "Server.h"
 
-Server::Server()
+Server::Server(bool &Run)
+	:Run(Run)
 {
 
 }
@@ -68,122 +71,52 @@ void Server::Shutdown()
 	WSACleanup();
 }
 
-void Server::Start(bool &Run)
+void Server::Start()
 {
+	std::vector<Client> Accepted;
 	while(Run)
 	{
-		Client *One=NULL, *Two=NULL;
+		Client New;
+		if(!Accept(&New))
+		{
+			std::cout<<"Failed to accept Client."<<std::endl;
+			continue;
+		}
+		Accepted.push_back(New);
 
+		if(Accepted.size()>1)
+		{
+			// Create Game and store it
+			Game NewGame(std::vector<Client>(Accepted.begin(), Accepted.begin()+1), GameSettings);
+			Games.push_back(NewGame);
+			Accepted.erase(Accepted.begin(), Accepted.begin()+2);
+
+			// Start Game
+			Games[Games.size()-1].Start(Run);
+
+		}
 	}
 }
 
 bool Server::Accept(Client *Buffer)
 {
-	return true;
-}
+	Buffer=new Client();
+	sockaddr_storage Storage;
+	socklen_t Size=sizeof(Storage);
 
-bool Server::Send(SOCKET Target, std::string Message)
-{
-	int MessageSize=Message.size();
-	int MessageSizeSize=std::string(_itoa(MessageSize, NULL, 10)).size();
-
-	// Send size of size indicator
-	if(!SendPlain(Target, _itoa(MessageSizeSize, NULL, 10)))
+	while(Run)
 	{
-		return false;
-	}
-	// Send size indicator
-	if(!SendPlain(Target, _itoa(MessageSize, NULL, 10)))
-	{
-		return false;
-	}
-	// Send body
-	if(!SendPlain(Target, Message))
-	{
-		return false;
-	}
-
-	return true;
-}
-bool Server::SendPlain(SOCKET Target, std::string Message)
-{
-	unsigned int Sent=0;
-	while(Sent!=Message.size())
-	{
-		int Result=send(Target, &Message[Sent], Message.size()-Sent, NULL);
-		if(Result<0)
+		Buffer->ClientSocket=accept(ServerSocket, (sockaddr *)&Storage, &Size);
+		if(Buffer->ClientSocket!=-1)
 		{
-			return false;
-		}
-		else
-		{
-			Sent+=Result;
+			break;
 		}
 	}
 
-	return true;
-}
-bool Server::Send(Client Target, std::string Message)
-{
-	return Send(Target.ClientSocket, Message);
-}
-bool Server::SendPlain(Client Target, std::string Message)
-{
-	return SendPlain(Target.ClientSocket, Message);
-}
-
-bool Server::Receive(SOCKET Target, std::string &Buffer)
-{
-	unsigned int MessageSizeSize;
-	unsigned int MessageSize;
-	std::string Temp;
-
-	// Receive MessageSizeSize
-	if(!ReceivePlain(Target, 1, Temp))
-	{
-		return false;
-	}
-	MessageSizeSize=atoi(Temp.c_str());
-
-	// Receive MessageSize
-	if(!ReceivePlain(Target, MessageSizeSize, Temp))
-	{
-		return false;
-	}
-	MessageSize=atoi(Temp.c_str());
-
-	// Receive Message
-	if(!ReceivePlain(Target, MessageSize, Temp))
+	if(!Receive(Buffer, Buffer->Username))
 	{
 		return false;
 	}
 
-	// Swap buffers
-	Buffer=Temp;
-
 	return true;
-}
-bool Server::ReceivePlain(SOCKET Target, unsigned int Length, std::string &Buffer)
-{
-	// Receive a message of Length from Server
-	std::string Received;
-	while(true)
-	{
-		if(recv(Target, &Received[Received.size()-1], Length-Received.size()-1, NULL)<0)
-		{
-			return false;
-		}
-	}
-	// Swap buffers
-	Buffer=Received;
-
-	return true;
-}
-bool Server::Receive(Client Target, std::string &Buffer)
-{
-	return Receive(Target.ClientSocket, Buffer);
-}
-bool Server::ReceivePlain(Client Target, unsigned int Length, std::string &Buffer)
-{
-	return ReceivePlain(Target.ClientSocket, Length, Buffer);
 }

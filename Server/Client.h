@@ -10,7 +10,9 @@
 class Client
 {
 public:
+	Client();
 	Client(SOCKET ClientSocket);
+	Client(SOCKET ClientSocket, std::string Username);
 
 	std::string Username;
 	SOCKET ClientSocket;

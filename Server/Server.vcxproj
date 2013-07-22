@@ -84,14 +84,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GamePair.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ConsoleControl.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Networking.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleshipSettings.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="GamePair.h" />
+    <ClInclude Include="ConsoleControl.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Networking.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

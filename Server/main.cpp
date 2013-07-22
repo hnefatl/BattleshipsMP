@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 	bool Run=true;
-	Server MainServer;
+	Server MainServer(Run);
 	if(!MainServer.Init("34652"))
 	{
 		std::cout<<"Server failed to initialise. Press any key to continue..."<<std::endl;
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	MainServer.Start(Run);
+	MainServer.Start();
 
 	return 0;
 }
