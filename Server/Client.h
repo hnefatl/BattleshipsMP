@@ -14,8 +14,6 @@ public:
 
 	std::string Username;
 	SOCKET ClientSocket;
-
-
 };
 
 #endif
