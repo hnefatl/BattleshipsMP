@@ -119,23 +119,53 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 		bool Conflict=false;
 		try
 		{
-			// Loop (size of ship) times, so that x=0 is central to marker
-			for(int x=0-((int)ShipType+1)/2; x<((int)ShipType+1)/2; x++)
+			if(Settings.TouchingShips)
 			{
-				if(Flipped)
+				// Loop (size of ship) times, so that x=0 is central to marker
+				for(int x=0-((int)ShipType+1)/2; x<((int)ShipType+1)/2; x++)
 				{
-					// Horizontal marker
-					if(Board[CursorY][CursorX+x]!=Cell::Empty)
+					if(Flipped)
 					{
-						Conflict=true;
+						// Horizontal marker
+						if(Board[CursorY][CursorX+x]!=Cell::Empty)
+						{
+							Conflict=true;
+						}
+					}
+					else
+					{
+						// Vertical marker
+						if(Board[CursorY+x][CursorX]!=Cell::Empty)
+						{
+							Conflict=true;
+						}
 					}
 				}
-				else
+			}
+			else
+			{
+				// Run same check as with TouchingShips, but +1 to each axis
+				// Loop (size of ship) times, so that x=0 is central to marker, and y goes from -1 - 1 to traverse each side
+				for(unsigned int y=-1; y<=1; y++)
 				{
-					// Vertical marker
-					if(Board[CursorY+x][CursorX]!=Cell::Empty)
+					for(int x=(0-((int)ShipType+1)/2)-1; x<(((int)ShipType+1)/2)+1; x++)
 					{
-						Conflict=true;
+						if(Flipped)
+						{
+							// Horizontal marker
+							if(Board[CursorY+y][CursorX+x]!=Cell::Empty)
+							{
+								Conflict=true;
+							}
+						}
+						else
+						{
+							// Vertical marker
+							if(Board[CursorY+x][CursorX+y]!=Cell::Empty)
+							{
+								Conflict=true;
+							}
+						}
 					}
 				}
 			}

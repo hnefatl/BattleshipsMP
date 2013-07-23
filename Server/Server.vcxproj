@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BattleshipSettings.h" />
+    <ClInclude Include="Cell.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ConsoleControl.h" />
     <ClInclude Include="Game.h" />

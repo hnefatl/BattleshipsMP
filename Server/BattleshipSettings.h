@@ -13,6 +13,7 @@ public:
 	unsigned int TimeToPlaceShips, TimePerTurn;
 	unsigned int ShipsAllowed[5];
 	bool TouchingShips;
+	std::string DisconnectString;
 	ConsoleColour EmptyBackColour, EmptyForeColour;
 	ConsoleColour ShipBackColour, ShipForeColour;
 	ConsoleColour StrikeBackColour, StrikeForeColour;

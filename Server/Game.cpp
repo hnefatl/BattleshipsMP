@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "Networking.h"
+#include "Cell.h"
 
 Game::Game(std::vector<Client> Players, BattleshipSettings Settings)
 	:Players(Players),
@@ -45,7 +46,8 @@ void Game::Play(bool &Run)
 	{
 		if(!Send(&Players[x], Players[1-x].Username))
 		{
-			LogError("Opponent name transmit failed");
+			LogError("Opponent name send failed to "+x);
+			Shutdown();
 		}
 	}
 	Log("Opponent names transmitted");
@@ -56,7 +58,8 @@ void Game::Play(bool &Run)
 	{
 		if(!Send(&Players[x], "1"))
 		{
-			LogError("");
+			LogError("Flag send failed for player "+x);
+			Shutdown();
 		}
 	}
 
@@ -64,19 +67,56 @@ void Game::Play(bool &Run)
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
 		std::string Flag;
-		Receive(&Players[x], Flag);
+		if(!Receive(&Players[x], Flag))
+		{
+			LogError("Flag receive failed for player "+x);
+			Shutdown();
+		}
 	}
 
 	// Receive boards
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
 		std::string Board;
-		Receive(&Players[x], Board);
+		if(!Receive(&Players[x], Board))
+		{
+			LogError("Board receive failed for Player "+x);
+			Shutdown();
+		}
+		if(Board.size()!=Settings.Width*Settings.Height)
+		{
+			LogError("Board size invalid for Player "+x);
+			Shutdown();
+		}
+
+		// Store Board
+		Players[x].Board.resize(Settings.Height);
+		for(unsigned int y=0; y<Players[x].Board.size(); y++)
+		{
+			Players[x].Board[y].resize(Settings.Width);
+		}
+
+		for(unsigned int a=0; a<Players[x].Board.size(); a++)
+		{
+			for(unsigned int b=0; b<Players[x].Board[a].size(); b++)
+			{
+				Players[x].Board[a][b]=(Cell)((int)Board[(a*Settings.Width)+b]);
+			}
+		}
 	}
 
 	while(Run)
 	{
 
+	}
+}
+
+void Game::Shutdown()
+{
+	for(unsigned int x=0; x<Players.size(); x++)
+	{
+		Log("Disconnect: "+x);
+		Send(&Players[x], Settings.DisconnectString);
 	}
 }
 

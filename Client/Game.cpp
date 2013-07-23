@@ -106,6 +106,11 @@ bool Game::DownloadSettings()
 		return false;
 	Settings.TouchingShips=(atoi(Buffer.c_str())!=0);
 
+	// Disconnect String
+	if(!Receive(Buffer))
+		return false;
+	Settings.DisconnectString=Buffer;
+
 	// EmptyBackColour
 	if(!Receive(Buffer))
 		return false;
@@ -175,6 +180,7 @@ void Game::PlaceShips()
 	if(PlacingThread.joinable())
 		PlacingThread.join();
 
+	// Ships placed, send Board to Server
 
 }
 

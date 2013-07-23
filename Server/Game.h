@@ -31,6 +31,8 @@ private:
 
 	void Log(std::string Message);
 	void LogError(std::string Error);
+
+	void Shutdown();
 private:
 	std::vector<Client> Players;
 	std::vector<std::string> MessageLog;
