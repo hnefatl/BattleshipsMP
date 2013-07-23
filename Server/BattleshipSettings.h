@@ -3,6 +3,9 @@
 
 #include "ConsoleControl.h"
 
+#include <vector>
+#include <string>
+
 class BattleshipSettings
 {
 public:
@@ -14,6 +17,8 @@ public:
 	ConsoleColour ShipBackColour, ShipForeColour;
 	ConsoleColour StrikeBackColour, StrikeForeColour;
 	ConsoleColour IllegalBackColour, IllegalForeColour;
+
+	std::vector<std::string> EnumerateSettings();
 };
 
 #endif

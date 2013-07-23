@@ -94,6 +94,15 @@ void Server::Start()
 			// Start Game
 			Games[Games.size()-1].Start(Run);
 
+			// Dispose of finished games
+			for(int x=0; x<(int)Games.size(); x++)
+			{
+				if(Games[(unsigned)x].IsFinished())
+				{
+					Games.erase(Games.begin()+x);
+					x--;
+				}
+			}
 		}
 	}
 }
