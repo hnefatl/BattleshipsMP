@@ -17,13 +17,14 @@ public:
 
 	bool Init(std::string Port);
 
-	void Start();
+	void Start(unsigned int Backlog);
 
 private:
 	void Shutdown();
 
 	void RunGame(Client *One, Client *Two);
 
+	bool Listen();
 	bool Accept(Client *Buffer);
 
 private:
@@ -33,6 +34,7 @@ private:
 	std::vector<Game> Games;
 
 	bool &Run;
+	unsigned int Backlog;
 };
 
 #endif

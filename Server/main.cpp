@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	MainServer.Start();
+	MainServer.Start(100);
 
 	return 0;
 }

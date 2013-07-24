@@ -5,7 +5,8 @@
 
 Game::Game(std::vector<Client> Players, BattleshipSettings Settings)
 	:Players(Players),
-	Settings(Settings)
+	Settings(Settings),
+	Finished(false)
 {
 	Log("Constructed");
 }
@@ -39,12 +40,12 @@ std::vector<std::string> Game::GetLog()
 	return MessageLog;
 }
 
-void Game::Play(bool &Run)
+void Game::Play(bool &Run) 
 {
 	// Transmit opponent names
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
-		if(!Send(&Players[x], Players[1-x].Username))
+		if(!Send(Players[x].ClientSocket, Players[1-x].Username))
 		{
 			LogError("Opponent name send failed to "+x);
 			Shutdown();
@@ -56,7 +57,7 @@ void Game::Play(bool &Run)
 	// Send Flag (trigger to Place ships)
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
-		if(!Send(&Players[x], "1"))
+		if(!Send(Players[x].ClientSocket, "1"))
 		{
 			LogError("Flag send failed for player "+x);
 			Shutdown();
@@ -67,7 +68,7 @@ void Game::Play(bool &Run)
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
 		std::string Flag;
-		if(!Receive(&Players[x], Flag))
+		if(!Receive(Players[x].ClientSocket, &Flag))
 		{
 			LogError("Flag receive failed for player "+x);
 			Shutdown();
@@ -78,7 +79,7 @@ void Game::Play(bool &Run)
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
 		std::string Board;
-		if(!Receive(&Players[x], Board))
+		if(!Receive(Players[x].ClientSocket, &Board))
 		{
 			LogError("Board receive failed for Player "+x);
 			Shutdown();
@@ -116,7 +117,7 @@ void Game::Shutdown()
 	for(unsigned int x=0; x<Players.size(); x++)
 	{
 		Log("Disconnect: "+x);
-		Send(&Players[x], Settings.DisconnectString);
+		Send(Players[x].ClientSocket, Settings.DisconnectString);
 	}
 }
 
@@ -136,7 +137,7 @@ bool Game::UploadSettings()
 	{
 		for(unsigned int y=0; y<GameSettings.size(); y++)
 		{
-			if(!Send(&Players[x], GameSettings[y]))
+			if(!Send(Players[x].ClientSocket, GameSettings[y]))
 			{
 				return false;
 			}

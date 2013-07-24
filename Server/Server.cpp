@@ -71,28 +71,33 @@ void Server::Shutdown()
 	WSACleanup();
 }
 
-void Server::Start()
+void Server::Start(unsigned int Backlog)
 {
 	std::vector<Client> Accepted;
+
+	Listen();
 	while(Run)
 	{
 		Client New;
+		std::cout<<"Awaiting clients...";
 		if(!Accept(&New))
 		{
 			std::cout<<"Failed to accept Client."<<std::endl;
 			continue;
 		}
+		std::cout<<"Client accepted: "+New.Username<<std::endl;
 		Accepted.push_back(New);
 
 		if(Accepted.size()>1)
 		{
 			// Create Game and store it
-			Game NewGame(std::vector<Client>(Accepted.begin(), Accepted.begin()+1), GameSettings);
+			Game NewGame(std::vector<Client>(Accepted.begin(), Accepted.begin()+2), GameSettings);
 			Games.push_back(NewGame);
 			Accepted.erase(Accepted.begin(), Accepted.begin()+2);
 
 			// Start Game
 			Games[Games.size()-1].Start(Run);
+			std::cout<<"New Game started."<<std::endl;
 
 			// Dispose of finished games
 			for(int x=0; x<(int)Games.size(); x++)
@@ -107,25 +112,37 @@ void Server::Start()
 	}
 }
 
+bool Server::Listen()
+{
+	if(!listen(ServerSocket, Backlog))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool Server::Accept(Client *Buffer)
 {
-	Buffer=new Client();
+	Client Temp;
 	sockaddr_storage Storage;
 	socklen_t Size=sizeof(Storage);
 
 	while(Run)
 	{
-		Buffer->ClientSocket=accept(ServerSocket, (sockaddr *)&Storage, &Size);
-		if(Buffer->ClientSocket!=-1)
+		Temp.ClientSocket=accept(ServerSocket, (sockaddr *)&Storage, &Size);
+		if(Temp.ClientSocket!=-1)
 		{
 			break;
 		}
 	}
 
-	if(!Receive(Buffer, Buffer->Username))
+	if(!Receive(Temp.ClientSocket, &Temp.Username))
 	{
 		return false;
 	}
+
+	*Buffer=Temp;
 
 	return true;
 }

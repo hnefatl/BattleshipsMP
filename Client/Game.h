@@ -27,15 +27,10 @@ public:
 private:
 	int Connect();
 
-	void PlaceShips();
-
-	bool Send(std::string Message);
-	bool SendPlain(std::string Message);
-	bool Receive(std::string &Buffer);
-	bool ReceivePlain(unsigned int Length, std::string &Buffer);
+	bool PlaceShips();
 
 private:
-	int Client, Server;
+	SOCKET Client, Server;
 
 	std::string Username, Opponent;
 
@@ -43,10 +38,7 @@ private:
 
 	std::vector<std::vector<Cell>> Board;
 
-	std::string Address;
-	int Port;
-
-	std::string DisconnectionString;
+	std::string Address, Port;
 
 	bool DownloadSettings();
 

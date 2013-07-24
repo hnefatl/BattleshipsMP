@@ -88,6 +88,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="KeyMonitor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Networking.cpp" />
     <ClCompile Include="ShipPlacer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +97,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="KeyMonitor.h" />
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="Networking.h" />
     <ClInclude Include="ShipPlacer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
