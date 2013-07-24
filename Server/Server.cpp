@@ -1,11 +1,93 @@
 #include <iostream>
+#include <fstream>
 
 #include "Server.h"
 
 Server::Server(bool &Run)
 	:Run(Run)
 {
+}
 
+bool Server::LoadSettings(std::string PathToSettings)
+{
+	std::ifstream In(PathToSettings);
+	if(!In.good())
+	{
+		return false;
+	}
+
+	try
+	{
+		std::string Buffer;
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.Width=atoi(Buffer.c_str());							// Width
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.Height=atoi(Buffer.c_str());							//Height
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.TimeToPlaceShips=atoi(Buffer.c_str());					// Time to place ships
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.TimePerTurn=atoi(Buffer.c_str());						// Time per turn
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.TouchingShips=atoi(Buffer.c_str())!=0;					// Whether ships can touch or not
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.DisconnectString=Buffer;								// Disconnection string
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.EmptyBackColour=(ConsoleColour)atoi(Buffer.c_str());	// Empty Back colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.EmptyForeColour=(ConsoleColour)atoi(Buffer.c_str());	// Empty Fore colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.ShipBackColour=(ConsoleColour)atoi(Buffer.c_str());	// Ship Back colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.ShipForeColour=(ConsoleColour)atoi(Buffer.c_str());	// Ship Fore colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.StrikeBackColour=(ConsoleColour)atoi(Buffer.c_str());	// Strike Back colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.StrikeForeColour=(ConsoleColour)atoi(Buffer.c_str());	// Strike Fore colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.IllegalBackColour=(ConsoleColour)atoi(Buffer.c_str());	// Illegal back colour
+
+		std::getline(In, Buffer);
+		Buffer=Split(Buffer, ':')[1];
+		GameSettings.IllegalForeColour=(ConsoleColour)atoi(Buffer.c_str());	// Illegal Fore colour
+
+		for(unsigned int x=0; x<5; x++)
+		{
+			std::getline(In, Buffer);
+			Buffer=Split(Buffer, ':')[1];
+			GameSettings.ShipsAllowed[x]=atoi(Buffer.c_str());				// Ships allowed per size
+		}
+	}
+	catch(std::exception)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool Server::Init(std::string Port)
@@ -145,4 +227,30 @@ bool Server::Accept(Client *Buffer)
 	*Buffer=Temp;
 
 	return true;
+}
+
+std::vector<std::string> Server::Split(std::string Input, char Delimiter)
+{
+	std::vector<std::string> Segments;
+	std::string Temp;
+	for(unsigned int x=0; x<Input.size(); x++)
+	{
+		if(Input[x]==Delimiter)
+		{
+			if(Temp.size()>0)
+			{
+				Segments.push_back(Temp);
+				Temp.clear();
+			}
+		}
+		else
+		{
+			Temp+=Input[x];
+		}
+	}
+	if(Temp.size()>0)
+	{
+		Segments.push_back(Temp);
+	}
+	return Segments;
 }

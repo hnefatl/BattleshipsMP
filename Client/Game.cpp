@@ -71,7 +71,7 @@ bool Game::Start()
 		std::cout<<"Connection lost."<<std::endl;
 		return true;
 	}
-	std::cout<<Opponent<<" connected.";
+	std::cout<<"Player "<<Opponent<<" connected."<<std::endl;
 
 	// Set board
 	std::cout<<"Receiving Game data...";
@@ -124,7 +124,7 @@ bool Game::DownloadSettings()
 	// Disconnect String
 	if(!Receive(Server, &Buffer))
 		return false;
-	Settings.DisconnectString=Server, Buffer;
+	Settings.DisconnectString=Buffer;
 
 	// EmptyBackColour
 	if(!Receive(Server, &Buffer))

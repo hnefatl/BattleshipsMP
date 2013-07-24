@@ -27,33 +27,18 @@
     <ClCompile Include="ShipPlacer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="KeyMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleshipSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShipPlacer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

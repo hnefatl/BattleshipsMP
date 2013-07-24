@@ -15,6 +15,7 @@ class Server
 public:
 	Server(bool &Run);
 
+	bool LoadSettings(std::string PathToSettings);
 	bool Init(std::string Port);
 
 	void Start(unsigned int Backlog);
@@ -26,6 +27,8 @@ private:
 
 	bool Listen();
 	bool Accept(Client *Buffer);
+
+	std::vector<std::string> Split(std::string Input, char Delimiter);
 
 private:
 	SOCKET ServerSocket;

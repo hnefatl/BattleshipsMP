@@ -49,6 +49,7 @@ void Game::Play(bool &Run)
 		{
 			LogError("Opponent name send failed to "+x);
 			Shutdown();
+			return;
 		}
 	}
 	Log("Opponent names transmitted");
@@ -61,6 +62,7 @@ void Game::Play(bool &Run)
 		{
 			LogError("Flag send failed for player "+x);
 			Shutdown();
+			return;
 		}
 	}
 
@@ -72,6 +74,7 @@ void Game::Play(bool &Run)
 		{
 			LogError("Flag receive failed for player "+x);
 			Shutdown();
+			return;
 		}
 	}
 
@@ -83,11 +86,13 @@ void Game::Play(bool &Run)
 		{
 			LogError("Board receive failed for Player "+x);
 			Shutdown();
+			return;
 		}
 		if(Board.size()!=Settings.Width*Settings.Height)
 		{
 			LogError("Board size invalid for Player "+x);
 			Shutdown();
+			return;
 		}
 
 		// Store Board
