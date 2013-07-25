@@ -1,22 +1,19 @@
 #include "Networking.h"
 
+#include "Util.h"
+
 bool Send(SOCKET Target, std::string Message)
 {
-	std::string Temp;
 	int MessageSize=Message.size();
-	_itoa(MessageSize, &Temp[0], 10);
-	Temp=std::string(Temp.c_str()); // Update size
-	int MessageSizeSize=Temp.length();
+	int MessageSizeSize=ToString(MessageSize).length();
 
 	// Send size of size indicator
-	_itoa(MessageSizeSize, &Temp[0], 10);
-	if(!SendPlain(Target, Temp))
+	if(!SendPlain(Target, ToString(MessageSizeSize)))
 	{
 		return false;
 	}
 	// Send size indicator
-	_itoa(MessageSize, &Temp[0], 10);
-	if(!SendPlain(Target, Temp))
+	if(!SendPlain(Target, ToString(MessageSize)))
 	{
 		return false;
 	}
@@ -59,6 +56,7 @@ bool Receive(SOCKET Target, std::string *Buffer)
 		return false;
 	}
 	MessageSizeSize=atoi(Temp.c_str());
+	Temp.clear();
 
 	// Receive MessageSize
 	if(!ReceivePlain(Target, MessageSizeSize, &Temp))
@@ -66,6 +64,7 @@ bool Receive(SOCKET Target, std::string *Buffer)
 		return false;
 	}
 	MessageSize=atoi(Temp.c_str());
+	Temp.clear();
 
 	// Receive Message
 	if(!ReceivePlain(Target, MessageSize, &Temp))
@@ -83,6 +82,7 @@ bool ReceivePlain(SOCKET Target, unsigned int Length, std::string *Buffer)
 	// Receive a message of Length from Server
 	std::string Received;
 	unsigned int AmountReceived=0;
+
 	while(AmountReceived!=Length)
 	{
 		std::string TempString;

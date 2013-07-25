@@ -28,8 +28,6 @@ private:
 	bool Listen();
 	bool Accept(Client *Buffer);
 
-	std::vector<std::string> Split(std::string Input, char Delimiter);
-
 private:
 	SOCKET ServerSocket;
 

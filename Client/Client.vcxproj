@@ -99,6 +99,11 @@
     <ClInclude Include="Cell.h" />
     <ClInclude Include="ShipPlacer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Global\Global.vcxproj">
+      <Project>{d1f0bad8-4c93-446c-8974-1ec3ed117129}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

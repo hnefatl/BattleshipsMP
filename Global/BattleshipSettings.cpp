@@ -3,27 +3,29 @@
 #include <vector>
 #include <string>
 
+#include "Util.h"
+
 std::vector<std::string> BattleshipSettings::EnumerateSettings()
 {
 	std::vector<std::string> Settings;
 	std::string Buffer;
-	Settings.push_back(std::string(_itoa(Width, &Buffer[0], 10)));		// Width
-	Settings.push_back(_itoa(Height, &Buffer[0], 10));					// Height
-	Settings.push_back(_itoa(TimeToPlaceShips, &Buffer[0], 10));		// Time to place ships
-	Settings.push_back(_itoa(TimePerTurn, &Buffer[0], 10));				// Time per turn
-	Settings.push_back(TouchingShips?"1":"0");							// Whether ships can touch
-	Settings.push_back(DisconnectString);								// String to signal Server force disconnect
-	Settings.push_back(_itoa((int)EmptyBackColour, &Buffer[0], 10));	// EmptyBackColour
-	Settings.push_back(_itoa((int)EmptyForeColour, &Buffer[0], 10));	// EmptyForeColour
-	Settings.push_back(_itoa((int)ShipBackColour, &Buffer[0], 10));		// ShipBackColour
-	Settings.push_back(_itoa((int)ShipForeColour, &Buffer[0], 10));		// ShipForeColour
-	Settings.push_back(_itoa((int)StrikeBackColour, &Buffer[0], 10));	// StrikeBackColour
-	Settings.push_back(_itoa((int)StrikeForeColour, &Buffer[0], 10));	// StrikeForeColour
-	Settings.push_back(_itoa((int)IllegalBackColour, &Buffer[0], 10));	// IllegalBackColour
-	Settings.push_back(_itoa((int)IllegalForeColour, &Buffer[0], 10));	// IllegalForeColour
+	Settings.push_back(ToString(Width));					// Width
+	Settings.push_back(ToString(Height));					// Height
+	Settings.push_back(ToString(TimeToPlaceShips));			// Time to place ships
+	Settings.push_back(ToString(TimePerTurn));				// Time per turn
+	Settings.push_back(TouchingShips?"1":"0");				// Whether ships can touch
+	Settings.push_back(DisconnectString);					// String to signal Server force disconnect
+	Settings.push_back(ToString((int)EmptyBackColour));		// EmptyBackColour
+	Settings.push_back(ToString((int)EmptyForeColour));		// EmptyForeColour
+	Settings.push_back(ToString((int)ShipBackColour));		// ShipBackColour
+	Settings.push_back(ToString((int)ShipForeColour));		// ShipForeColour
+	Settings.push_back(ToString((int)StrikeBackColour));	// StrikeBackColour
+	Settings.push_back(ToString((int)StrikeForeColour));	// StrikeForeColour
+	Settings.push_back(ToString((int)IllegalBackColour));	// IllegalBackColour
+	Settings.push_back(ToString((int)IllegalForeColour));	// IllegalForeColour
 	for(unsigned int x=0; x<5; x++)
 	{
-		Settings.push_back(_itoa(ShipsAllowed[x], &Buffer[0], 10));		// Allowed ships for size x
+		Settings.push_back(ToString(ShipsAllowed[x]));		// Allowed ships for size x
 	}
 
 	return Settings;

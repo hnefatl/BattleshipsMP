@@ -14,11 +14,13 @@
     <ClCompile Include="BattleshipSettings.cpp" />
     <ClCompile Include="ConsoleControl.cpp" />
     <ClCompile Include="Networking.cpp" />
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BattleshipSettings.h" />
     <ClInclude Include="ConsoleControl.h" />
     <ClInclude Include="Networking.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D1F0BAD8-4C93-446C-8974-1EC3ED117129}</ProjectGuid>

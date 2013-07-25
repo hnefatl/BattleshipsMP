@@ -16,14 +16,18 @@ bool Game::Start()
 		return false;
 	}
 
+#ifndef _DEBUG
 	// Get logon
 	std::cout<<"Enter your username: ";
 	std::getline(std::cin, Username);
 	Clear();
-
+#else
+	Username="hnefatl";
+#endif
 	// Connect
 	while(true)
 	{
+#ifndef _DEBUG
 		std::cout<<"Enter the Server address: ";
 		std::cin>>Address;
 		if(Address=="exit")
@@ -32,6 +36,10 @@ bool Game::Start()
 		}
 		std::cout<<"Enter the Server port: ";
 		std::cin>>Port;
+#else
+		Address="127.0.0.1";
+		Port="34652";
+#endif
 
 		std::cout<<"Connecting...";
 		int ConnectionResult=Connect();

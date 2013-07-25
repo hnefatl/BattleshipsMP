@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "Server.h"
+#include "Util.h"
 
 Server::Server(bool &Run)
 	:Run(Run)
@@ -227,30 +228,4 @@ bool Server::Accept(Client *Buffer)
 	*Buffer=Temp;
 
 	return true;
-}
-
-std::vector<std::string> Server::Split(std::string Input, char Delimiter)
-{
-	std::vector<std::string> Segments;
-	std::string Temp;
-	for(unsigned int x=0; x<Input.size(); x++)
-	{
-		if(Input[x]==Delimiter)
-		{
-			if(Temp.size()>0)
-			{
-				Segments.push_back(Temp);
-				Temp.clear();
-			}
-		}
-		else
-		{
-			Temp+=Input[x];
-		}
-	}
-	if(Temp.size()>0)
-	{
-		Segments.push_back(Temp);
-	}
-	return Segments;
 }
