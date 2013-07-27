@@ -188,6 +188,7 @@ bool Game::DownloadSettings()
 bool Game::PlaceShips()
 {
 	Clear();
+	SetCursor(false);
 
 	std::mutex *ConsoleLock=new std::mutex();
 	bool Signal=false;
@@ -203,6 +204,7 @@ bool Game::PlaceShips()
 	if(PlacingThread.joinable())
 		PlacingThread.join();
 
+	SetCursor(true);
 	// Ships placed, send Board to Server
 	std::string StringBoard;
 	for(unsigned int y=0; y<Board.size(); y++)
@@ -222,42 +224,51 @@ bool Game::PlaceShips()
 
 void Game::TimerFunction(unsigned int Time, bool &Signal, std::mutex *Mutex)
 {
-	if(Time==0)
-	{
-		// Deactivate Signal off, then exit
-		Signal=false;
-	}
-	else
-	{
-		Signal=false;
-		// Get timer start time
-		clock_t Start=clock();
+	// Initial draw
+	Mutex->lock();
 
-		int SecondsPassed=0;
-		while(true)
+	SetCursor(0, Settings.Height+1);
+	SetColour(ConsoleColour::Grey, ConsoleColour::Black);
+	// Clear enough space for 10 digit time
+	std::cout<<"                     ";
+	SetCursor(0, Settings.Height+1);
+	std::cout<<"Time left: "<<Time;
+
+	Mutex->unlock();
+
+	Signal=false;
+	// Get timer start time
+	clock_t Start=clock();
+
+	int SecondsPassed=0;
+	while(true)
+	{
+		// If current time (seconds) is greater than start time (seconds) + length of wait
+		if((unsigned)clock()/CLOCKS_PER_SEC>(Start/CLOCKS_PER_SEC)+Time)
 		{
-			// If current time (seconds) is greater than start time (seconds) + length of wait
-			if((unsigned)clock()/CLOCKS_PER_SEC>(Start/CLOCKS_PER_SEC)+Time)
-			{
-				break;
-			}
+			break;
+		}
+		if(((Start/CLOCKS_PER_SEC)+1+SecondsPassed)<(clock()/CLOCKS_PER_SEC))
+		{
+			SecondsPassed++;
 			// Draw time
 			Mutex->lock();
 
-			SetCursor(0, 0);
+			SetCursor(0, Settings.Height+1);
+			SetColour(ConsoleColour::Grey, ConsoleColour::Black);
 			// Clear enough space for 10 digit time
 			std::cout<<"                     ";
-			SetCursor(0, 0);
-			std::cout<<"Time left: "<<((Start/CLOCKS_PER_SEC)+Time)-(clock()/CLOCKS_PER_SEC);
+			SetCursor(0, Settings.Height+1);
+			std::cout<<"Time left: "<<Time-SecondsPassed;
 
 			Mutex->unlock();
-
-			// Sleep for 0.05 second
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
-		// Activate Signal
-		Signal=true;
+
+		// Sleep for 0.05 second
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
+	// Activate Signal
+	Signal=true;
 }
 
 int Game::Connect()

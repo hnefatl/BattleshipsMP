@@ -19,6 +19,15 @@ void SetCursor(int x, int y)
   SetConsoleCursorPosition(hStdout, csbiInfo.dwCursorPosition);
 }
 
+void SetCursor(bool Active)
+{
+	HANDLE Console=GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO CursorInfo;
+	CursorInfo.bVisible=Active;
+	CursorInfo.dwSize=1;
+	SetConsoleCursorInfo(Console, &CursorInfo);
+}
+
 void Clear()
 {
 	system("cls");

@@ -28,6 +28,8 @@ extern void SetColour(ConsoleColour foreground, ConsoleColour background);
 
 extern void SetCursor(int x, int y);
 
+extern void SetCursor(bool Active);
+
 extern void Clear();
 
 #endif

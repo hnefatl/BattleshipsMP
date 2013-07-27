@@ -15,13 +15,13 @@ public:
 	
 	void Run(bool &Signal, std::mutex *Mutex);
 
-	void Update(KeyMonitor &Monitor);
+	bool Update(KeyMonitor &Monitor);
 	void Draw(std::mutex *Mutex);
 
 private:
 	std::vector<std::vector<Cell>> Board;
 	unsigned int CursorX, CursorY;
-	unsigned int LastCursorX, LastCursorY;
+	std::vector<unsigned int> LastCursorX, LastCursorY;
 	Cell ShipType;
 	bool Flipped;
 

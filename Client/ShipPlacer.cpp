@@ -14,6 +14,13 @@ ShipPlacer::ShipPlacer(BattleshipSettings Settings)
 	{
 		ShipsRemaining[x]=Settings.ShipsAllowed[x];
 	}
+
+	CursorX=Settings.Width/2;
+	CursorY=(Settings.Height/2)+1;
+	LastCursorX.push_back(CursorX);
+	LastCursorY.push_back(CursorY);
+	Flipped=false;
+	ShipType=Cell::Cruiser;
 }
 
 void ShipPlacer::Run(bool &Signal, std::mutex *Mutex)
@@ -22,16 +29,34 @@ void ShipPlacer::Run(bool &Signal, std::mutex *Mutex)
 	KeyMonitor Monitor(InputLock);
 	Monitor.Lock();
 
-	Draw(Mutex); // Initial Draw
+	// Draw board
+	Mutex->lock();
+	SetColour(ConsoleColour::Grey, ConsoleColour::Grey);
+	SetCursor(0, 0);
+	for(unsigned int y=0; y<Settings.Height; y++)
+	{
+		for(unsigned int x=0; x<Settings.Width; x++)
+		{
+			std::cout<<" ";
+		}
+		std::cout<<std::endl;
+	}
+	Mutex->unlock();
+
+	// Initial drawing
+	Draw(Mutex);
 	// While signalled to keep running
 	while(!Signal)
 	{
-		Update(Monitor);
-		Draw(Mutex);
+		if(Update(Monitor))
+		{
+			// Only draw if a change has been made
+			Draw(Mutex);
+		}
 	}
 }
 
-void ShipPlacer::Update(KeyMonitor &Monitor)
+bool ShipPlacer::Update(KeyMonitor &Monitor)
 {
 	int MaxShipSize=5;
 
@@ -39,9 +64,6 @@ void ShipPlacer::Update(KeyMonitor &Monitor)
 	{
 		// Update
 		int Key=Monitor.GetKey();
-
-		LastCursorX=CursorX;
-		LastCursorY=CursorY;
 
 		if(Key==224 && Monitor.KeyAvailable()) // Arrow Key
 		{
@@ -85,7 +107,10 @@ void ShipPlacer::Update(KeyMonitor &Monitor)
 		{
 
 		}
+
+		return true; // Change
 	}
+	return false; // No change
 }
 
 void ShipPlacer::Draw(std::mutex *Mutex)
@@ -94,16 +119,22 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 	Mutex->lock();
 
 	// Clear last Cursor
-	SetCursor(LastCursorX, LastCursorY);
-	if(Board[LastCursorY][LastCursorX]==Cell::Empty)
+	for(unsigned int x=0; x<LastCursorX.size(); x++)
 	{
-		SetColour(Settings.EmptyForeColour, Settings.EmptyBackColour);
+		SetCursor(LastCursorX[x], LastCursorY[x]);
+		if(Board[LastCursorY[x]][LastCursorX[x]]==Cell::Empty)
+		{
+			SetColour(Settings.EmptyForeColour, Settings.EmptyBackColour);
+		}
+		else
+		{
+			SetColour(Settings.ShipForeColour, Settings.ShipBackColour);
+		}
+		std::cout<<" ";
 	}
-	else
-	{
-		SetColour(Settings.ShipForeColour, Settings.ShipBackColour);
-	}
-	std::cout<<" ";
+
+	LastCursorX.clear();
+	LastCursorY.clear();
 
 	// Draw new Cursor
 	SetCursor(CursorX, CursorY);
@@ -117,14 +148,14 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 	{
 		// Does it conflict with board or other ships?
 		bool Conflict=false;
-		try
+		if(Settings.TouchingShips)
 		{
-			if(Settings.TouchingShips)
+			// Loop (size of ship) times, so that x=0 is central to marker
+			for(int x=0-((int)ShipType+1)/2; x<((int)ShipType+1)/2; x++)
 			{
-				// Loop (size of ship) times, so that x=0 is central to marker
-				for(int x=0-((int)ShipType+1)/2; x<((int)ShipType+1)/2; x++)
+				if(Flipped)
 				{
-					if(Flipped)
+					if(!((int)CursorX+x<0 || (int)CursorX+x>(int)Settings.Width-1))
 					{
 						// Horizontal marker
 						if(Board[CursorY][CursorX+x]!=Cell::Empty)
@@ -132,7 +163,10 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 							Conflict=true;
 						}
 					}
-					else
+				}
+				else
+				{
+					if(!((int)CursorY+x<0 || (int)CursorY+x>(int)Settings.Height-1))
 					{
 						// Vertical marker
 						if(Board[CursorY+x][CursorX]!=Cell::Empty)
@@ -142,15 +176,19 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 					}
 				}
 			}
-			else
+		}
+		else
+		{
+			// Run same check as with TouchingShips, but +1 to each axis
+			// Loop (size of ship) times, so that x=0 is central to marker, and y goes from -1 - 1 to traverse each side
+			for(int y=-1; y<=1; y++)
 			{
-				// Run same check as with TouchingShips, but +1 to each axis
-				// Loop (size of ship) times, so that x=0 is central to marker, and y goes from -1 - 1 to traverse each side
-				for(unsigned int y=-1; y<=1; y++)
+				for(int x=(0-((int)ShipType+1)/2)-1; x<(((int)ShipType+1)/2)+1; x++)
 				{
-					for(int x=(0-((int)ShipType+1)/2)-1; x<(((int)ShipType+1)/2)+1; x++)
+					if(Flipped)
 					{
-						if(Flipped)
+						if(!((int)CursorX+x<0 || (int)CursorX+x>(int)Settings.Width-1) ||
+							((int)CursorY+y<0 || (int)CursorX+x>(int)Settings.Height-1))
 						{
 							// Horizontal marker
 							if(Board[CursorY+y][CursorX+x]!=Cell::Empty)
@@ -158,7 +196,11 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 								Conflict=true;
 							}
 						}
-						else
+					}
+					else
+					{
+						if(!((int)CursorX+y<0 || (int)CursorX+y>(int)Settings.Width-1) ||
+							((int)CursorY+x<0 || (int)CursorX+x>(int)Settings.Height-1))
 						{
 							// Vertical marker
 							if(Board[CursorY+x][CursorX+y]!=Cell::Empty)
@@ -169,11 +211,6 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 					}
 				}
 			}
-		}
-		catch(std::exception)
-		{
-			// Out of bounds of array (Board), thus conflicts
-			Conflict=true;
 		}
 		if(Conflict)
 		{
@@ -187,27 +224,29 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 
 	// Actually draw marker
 	// Loop (size of ship) times, so that x=0 is central to marker
-	for(int x=0-((int)ShipType+1)/2; x<((int)ShipType+1)/2; x++)
+	for(float x=0-((float)ShipType+1)/2; x<((float)ShipType+1)/2; x++)
 	{
-		try
+		if(Flipped)
 		{
-			if(Flipped)
+			if(!((int)CursorX+x<0 || (int)CursorX+x>(int)Settings.Width-1))
 			{
 				// Horizontal marker
-				SetCursor(CursorY, CursorX+x);
+				SetCursor(CursorX+x, CursorY);
+				LastCursorX.push_back(CursorX+x);
+				LastCursorY.push_back(CursorY);
 			}
-			else
+		}
+		else
+		{
+			if(!((int)CursorY+x<0 || (int)CursorY+x>(int)Settings.Height-1))
 			{
 				// Vertical marker
-				SetCursor(CursorY+x, CursorX);
+				SetCursor(CursorX, CursorY+x);
+				LastCursorX.push_back(CursorX);
+				LastCursorY.push_back(CursorY+x);
 			}
-			std::cout<<" ";
 		}
-		catch(std::exception)
-		{
-			// Ignore
-		}
+		std::cout<<" ";
 	}
-
 	Mutex->unlock();
 }
