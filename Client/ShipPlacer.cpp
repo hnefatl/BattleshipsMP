@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ShipPlacer.h"
+#include "Util.h"
 
 ShipPlacer::ShipPlacer(BattleshipSettings Settings)
 	:Settings(Settings)
@@ -20,7 +21,7 @@ ShipPlacer::ShipPlacer(BattleshipSettings Settings)
 	LastCursorX.push_back(CursorX);
 	LastCursorY.push_back(CursorY);
 	Flipped=false;
-	ShipType=Cell::Cruiser;
+	ShipType=Cell::Destroyer;
 }
 
 void ShipPlacer::Run(bool &Signal, std::mutex *Mutex)
@@ -94,7 +95,7 @@ bool ShipPlacer::Update(KeyMonitor &Monitor)
 		}
 		else if(Key==45 || Key==95) // Minus key (with and without shift)
 		{
-			if((int)ShipType-1>1)
+			if((int)ShipType+1>1)
 			{
 				ShipType=(Cell)((int)ShipType-1);
 			}
@@ -224,15 +225,16 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 
 	// Actually draw marker
 	// Loop (size of ship) times, so that x=0 is central to marker
+	// Yes, the casting is required to make it work properly.
 	for(float x=0-((float)ShipType+1)/2; x<((float)ShipType+1)/2; x++)
 	{
 		if(Flipped)
 		{
-			if(!((int)CursorX+x<0 || (int)CursorX+x>(int)Settings.Width-1))
+			if(!((int)CursorX+Round(x)<0 || (int)CursorX+Round(x)>(int)Settings.Width-1))
 			{
 				// Horizontal marker
-				SetCursor(CursorX+x, CursorY);
-				LastCursorX.push_back(CursorX+x);
+				SetCursor(CursorX+Round(x), CursorY);
+				LastCursorX.push_back(CursorX+Round(x));
 				LastCursorY.push_back(CursorY);
 			}
 		}
@@ -241,9 +243,9 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 			if(!((int)CursorY+x<0 || (int)CursorY+x>(int)Settings.Height-1))
 			{
 				// Vertical marker
-				SetCursor(CursorX, CursorY+x);
+				SetCursor(CursorX, CursorY+Round(x));
 				LastCursorX.push_back(CursorX);
-				LastCursorY.push_back(CursorY+x);
+				LastCursorY.push_back(CursorY+Round(x));
 			}
 		}
 		std::cout<<" ";

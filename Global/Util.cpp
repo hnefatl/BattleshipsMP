@@ -34,3 +34,8 @@ std::vector<std::string> Split(std::string Input, char Delimiter)
 	}
 	return Segments;
 }
+
+int Round(float Input)
+{
+	return (int)floor(Input+0.5);
+}

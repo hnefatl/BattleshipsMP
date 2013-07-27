@@ -8,4 +8,6 @@ std::string ToString(int Input);
 
 std::vector<std::string> Split(std::string Input, char Delimiter);
 
+int Round(float Input);
+
 #endif
