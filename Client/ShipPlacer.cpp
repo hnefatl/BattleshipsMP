@@ -226,15 +226,15 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 	// Actually draw marker
 	// Loop (size of ship) times, so that x=0 is central to marker
 	// Yes, the casting is required to make it work properly.
-	for(float x=0-((float)ShipType+1)/2; x<((float)ShipType+1)/2; x++)
+	for(int x=Round(0-((float)ShipType+1)/2); x<Round(((float)ShipType+1)/2); x++)
 	{
 		if(Flipped)
 		{
-			if(!((int)CursorX+Round(x)<0 || (int)CursorX+Round(x)>(int)Settings.Width-1))
+			if(!((int)CursorX+x<0 || (int)CursorX+x>(int)Settings.Width-1))
 			{
 				// Horizontal marker
-				SetCursor(CursorX+Round(x), CursorY);
-				LastCursorX.push_back(CursorX+Round(x));
+				SetCursor(CursorX+x, CursorY);
+				LastCursorX.push_back(CursorX+x);
 				LastCursorY.push_back(CursorY);
 			}
 		}
@@ -243,9 +243,9 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 			if(!((int)CursorY+x<0 || (int)CursorY+x>(int)Settings.Height-1))
 			{
 				// Vertical marker
-				SetCursor(CursorX, CursorY+Round(x));
+				SetCursor(CursorX, CursorY+x);
 				LastCursorX.push_back(CursorX);
-				LastCursorY.push_back(CursorY+Round(x));
+				LastCursorY.push_back(CursorY+x);
 			}
 		}
 		std::cout<<" ";
