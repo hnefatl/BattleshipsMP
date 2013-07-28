@@ -97,6 +97,12 @@ bool Game::Start()
 		return true;
 	}
 
+	if(!Play())
+	{
+		std::cout<<"A network error occurred."<<std::endl;
+		return true;
+	}
+
 	return false;
 }
 
@@ -194,30 +200,40 @@ bool Game::PlaceShips()
 	ThreadSignal<bool> Signal=ThreadSignal<bool>(false);
 
 	ShipPlacer Placer(Settings);
-	std::thread TimerThread(&Game::TimerFunction, this, Settings.TimeToPlaceShips, &Signal, ConsoleLock);
+	std::thread *TimerThread=new std::thread(&Game::TimerFunction, this, Settings.TimeToPlaceShips, &Signal, ConsoleLock);
 	// Start a ShipPlacer running
-	std::thread PlacingThread(&ShipPlacer::Run, Placer, &Signal, ConsoleLock);
+	std::thread *PlacingThread=new std::thread(&ShipPlacer::Run, Placer, &Signal, ConsoleLock);
 
 	// Wait for both threads to terminate
-	if(TimerThread.joinable())
-		TimerThread.join();
-	if(PlacingThread.joinable())
-		PlacingThread.join();
+	if(TimerThread->joinable())
+		TimerThread->join();
+	if(PlacingThread->joinable())
+		PlacingThread->join();
 
-	SetCursor(true);
+	Clear();
 	// Ships placed, send Board to Server
+	std::cout<<"Sending Board to server...";
 	std::string StringBoard;
-	for(unsigned int y=0; y<Board.size(); y++)
+	for(unsigned int y=0; y<Placer.Board.size(); y++)
 	{
-		for(unsigned int x=0; x<Board[y].size(); x++)
+		for(unsigned int x=0; x<Placer.Board[y].size(); x++)
 		{
-			StringBoard+=(char)((int)Board[y][x]);
+			StringBoard+=(char)((int)Placer.Board[y][x]);
 		}
 	}
 	if(!Send(Server, StringBoard))
 	{
 		return false;
 	}
+	std::cout<<"Done."<<std::endl;
+
+	return true;
+}
+
+bool Game::Play()
+{
+	Clear();
+
 
 	return true;
 }

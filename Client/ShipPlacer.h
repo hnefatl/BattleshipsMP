@@ -19,8 +19,8 @@ public:
 	bool Update(KeyMonitor &Monitor);
 	void Draw(std::mutex *Mutex);
 
-private:
 	std::vector<std::vector<Cell>> Board;
+private:
 	unsigned int CursorX, CursorY;
 	std::vector<unsigned int> LastCursorX, LastCursorY;
 	Cell ShipType;

@@ -10,9 +10,7 @@ class KeyMonitor
 {
 public:
 	KeyMonitor(std::mutex *CinLock);
-
-	void Lock();
-	void Unlock();
+	~KeyMonitor();
 
 	bool KeyAvailable();
 	int GetKey();
@@ -21,9 +19,7 @@ private:
 	std::queue<int> KeyPresses;
 	std::mutex *CinLock;
 
-	bool Locked;
-
-	std::thread KeyMon;
+	std::thread *KeyMon;
 	void KeyMonFunc();
 };
 

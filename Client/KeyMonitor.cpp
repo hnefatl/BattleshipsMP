@@ -3,30 +3,17 @@
 #include <conio.h>
 
 KeyMonitor::KeyMonitor(std::mutex *CinLock)
-	:CinLock(CinLock),
-	Locked(false)
+	:CinLock(CinLock)
 {
-
+	KeyMon=new std::thread(&KeyMonitor::KeyMonFunc, this);
+	KeyMon->detach();
 }
-
-void KeyMonitor::Lock()
+KeyMonitor::~KeyMonitor()
 {
-	if(!Locked)
-	{
-		CinLock->lock();
-		Locked=true;
-		// Start thread
-		KeyMon=std::thread(&KeyMonitor::KeyMonFunc, this);
-	}
-}
-void KeyMonitor::Unlock()
-{
-	if(Locked)
-	{
-		CinLock->unlock();
-		Locked=false;
-		KeyMon.detach();
-	}
+	delete CinLock;
+	CinLock=NULL;
+	delete KeyMon;
+	KeyMon=NULL;
 }
 
 bool KeyMonitor::KeyAvailable()
@@ -43,7 +30,7 @@ int KeyMonitor::GetKey()
 	}
 	else
 	{
-		return 0;
+		return -1;
 	}
 }
 

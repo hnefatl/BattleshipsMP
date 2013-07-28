@@ -30,6 +30,8 @@ private:
 
 	bool PlaceShips();
 
+	bool Play();
+
 private:
 	SOCKET Client, Server;
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "ShipPlacer.h"
 #include "Util.h"
 
@@ -28,7 +29,6 @@ void ShipPlacer::Run(ThreadSignal<bool> *Signal, std::mutex *Mutex)
 {	
 	std::mutex *InputLock=new std::mutex();
 	KeyMonitor Monitor(InputLock);
-	Monitor.Lock();
 
 	// Draw board
 	Mutex->lock();
@@ -42,6 +42,18 @@ void ShipPlacer::Run(ThreadSignal<bool> *Signal, std::mutex *Mutex)
 		}
 		std::cout<<std::endl;
 	}
+
+	SetColour(ConsoleColour::Grey, ConsoleColour::Black);
+	SetCursor(Settings.Width+3, 0);
+	std::cout<<std::setw(25)<<"Destroyers remaining: "<<Settings.ShipsAllowed[Cell::Destroyer];
+	SetCursor(Settings.Width+3, 1);
+	std::cout<<std::setw(25)<<"Cruisers remaining: "<<ShipsRemaining[Cell::Destroyer];
+	SetCursor(Settings.Width+3, 2);
+	std::cout<<std::setw(25)<<"Submarines remaining: "<<ShipsRemaining[Cell::Destroyer];
+	SetCursor(Settings.Width+3, 3);
+	std::cout<<std::setw(25)<<"Battleships remaining: "<<ShipsRemaining[Cell::Destroyer];
+	SetCursor(Settings.Width+3, 4);
+	std::cout<<std::setw(25)<<"Carriers remaining: "<<ShipsRemaining[Cell::Destroyer];
 	Mutex->unlock();
 
 	// Initial drawing
@@ -108,15 +120,19 @@ bool ShipPlacer::Update(KeyMonitor &Monitor)
 		{
 			if(!Conflict)
 			{
-				for(int x=Round(0-((float)ShipType+1)/2); x<Round(((float)ShipType+1)/2); x++)
+				if(ShipsRemaining[ShipType]>0)
 				{
-					if(Flipped)
+					ShipsRemaining[ShipType]--;
+					for(int x=Round(0-((float)ShipType+1)/2); x<Round(((float)ShipType+1)/2); x++)
 					{
-						Board[CursorY][CursorX+x]=ShipType;
-					}
-					else
-					{
-						Board[CursorY+x][CursorX]=ShipType;
+						if(Flipped)
+						{
+							Board[CursorY][CursorX+x]=ShipType;
+						}
+						else
+						{
+							Board[CursorY+x][CursorX]=ShipType;
+						}
 					}
 				}
 			}
@@ -294,6 +310,23 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 				std::cout<<" ";
 			}
 		}
+	}
+
+	// Draw remaining ships
+	for(unsigned int x=0; x<5; x++)
+	{
+		if(ShipsRemaining[x]>0)
+		{
+			SetColour(ConsoleColour::Green, ConsoleColour::Black);
+		}
+		else
+		{
+			SetColour(ConsoleColour::Red, ConsoleColour::Black);
+		}
+
+		// Place cursor +3 out from board width, +25 for ships remaining message. Y position is current x
+		SetCursor(Settings.Width+3+25, x);
+		std::cout<<ShipsRemaining[x];
 	}
 	Mutex->unlock();
 }
