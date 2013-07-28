@@ -1,11 +1,11 @@
 #include <iostream>
 #include <conio.h>
 
-#include "Game.h"
+#include "GameLauncher.h"
 
 int main(int argc, char *argv[])
 {
-	Game Battleships;
+	GameLauncher Battleships;
 	if(Battleships.Start())
 	{
 		std::cout<<"Press any key to exit...";

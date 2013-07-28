@@ -89,11 +89,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameLauncher.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShipPlacer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameLauncher.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="ShipPlacer.h" />
   </ItemGroup>
