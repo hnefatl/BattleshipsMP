@@ -20,6 +20,7 @@
     <ClInclude Include="BattleshipSettings.h" />
     <ClInclude Include="ConsoleControl.h" />
     <ClInclude Include="Networking.h" />
+    <ClInclude Include="ThreadSignal.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

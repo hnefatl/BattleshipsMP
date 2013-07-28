@@ -191,12 +191,12 @@ bool Game::PlaceShips()
 	SetCursor(false);
 
 	std::mutex *ConsoleLock=new std::mutex();
-	bool Signal=false;
+	ThreadSignal<bool> Signal=ThreadSignal<bool>(false);
 
 	ShipPlacer Placer(Settings);
-	std::thread TimerThread(&Game::TimerFunction, this, Settings.TimeToPlaceShips, Signal, ConsoleLock);
+	std::thread TimerThread(&Game::TimerFunction, this, Settings.TimeToPlaceShips, &Signal, ConsoleLock);
 	// Start a ShipPlacer running
-	std::thread PlacingThread(&ShipPlacer::Run, Placer, Signal, ConsoleLock);
+	std::thread PlacingThread(&ShipPlacer::Run, Placer, &Signal, ConsoleLock);
 
 	// Wait for both threads to terminate
 	if(TimerThread.joinable())
@@ -222,7 +222,7 @@ bool Game::PlaceShips()
 	return true;
 }
 
-void Game::TimerFunction(unsigned int Time, bool &Signal, std::mutex *Mutex)
+void Game::TimerFunction(unsigned int Time, ThreadSignal<bool> *Signal, std::mutex *Mutex)
 {
 	// Initial draw
 	Mutex->lock();
@@ -236,7 +236,7 @@ void Game::TimerFunction(unsigned int Time, bool &Signal, std::mutex *Mutex)
 
 	Mutex->unlock();
 
-	Signal=false;
+	Signal->SetSignal(false);
 	// Get timer start time
 	clock_t Start=clock();
 
@@ -268,7 +268,7 @@ void Game::TimerFunction(unsigned int Time, bool &Signal, std::mutex *Mutex)
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 	// Activate Signal
-	Signal=true;
+	Signal->SetSignal(true);
 }
 
 int Game::Connect()

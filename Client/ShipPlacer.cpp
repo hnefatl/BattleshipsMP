@@ -24,7 +24,7 @@ ShipPlacer::ShipPlacer(BattleshipSettings Settings)
 	ShipType=Cell::Destroyer;
 }
 
-void ShipPlacer::Run(bool &Signal, std::mutex *Mutex)
+void ShipPlacer::Run(ThreadSignal<bool> *Signal, std::mutex *Mutex)
 {	
 	std::mutex *InputLock=new std::mutex();
 	KeyMonitor Monitor(InputLock);
@@ -47,7 +47,7 @@ void ShipPlacer::Run(bool &Signal, std::mutex *Mutex)
 	// Initial drawing
 	Draw(Mutex);
 	// While signalled to keep running
-	while(!Signal)
+	while(!Signal->GetSignal())
 	{
 		if(Update(Monitor))
 		{
@@ -106,7 +106,20 @@ bool ShipPlacer::Update(KeyMonitor &Monitor)
 		}
 		else if(Key=13) // Enter key
 		{
-
+			if(!Conflict)
+			{
+				for(int x=Round(0-((float)ShipType+1)/2); x<Round(((float)ShipType+1)/2); x++)
+				{
+					if(Flipped)
+					{
+						Board[CursorY][CursorX+x]=ShipType;
+					}
+					else
+					{
+						Board[CursorY+x][CursorX]=ShipType;
+					}
+				}
+			}
 		}
 
 		return true; // Change
@@ -148,7 +161,7 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 	else // Ships left
 	{
 		// Does it conflict with board or other ships?
-		bool Conflict=false;
+		Conflict=false;
 		if(Settings.TouchingShips)
 		{
 			// Loop (size of ship) times, so that x=0 is central to marker
@@ -257,7 +270,6 @@ void ShipPlacer::Draw(std::mutex *Mutex)
 
 	// Actually draw marker
 	// Loop (size of ship) times, so that x=0 is central to marker
-	// Yes, the casting is required to make it work properly.
 	for(int x=Round(0-((float)ShipType+1)/2); x<Round(((float)ShipType+1)/2); x++)
 	{
 		if(Flipped)

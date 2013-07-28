@@ -16,6 +16,7 @@
 #include "BattleshipSettings.h"
 #include "KeyMonitor.h"
 #include "Cell.h"
+#include "ThreadSignal.h"
 
 class Game
 {
@@ -42,7 +43,7 @@ private:
 
 	bool DownloadSettings();
 
-	void TimerFunction(unsigned int Time, bool &Signal, std::mutex *Mutex);
+	void TimerFunction(unsigned int Time, ThreadSignal<bool> *Signal, std::mutex *Mutex);
 };
 
 #endif
