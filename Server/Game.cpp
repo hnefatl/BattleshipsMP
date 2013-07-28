@@ -17,12 +17,13 @@ Game::~Game()
 	Handler=NULL;
 }
 
-void Game::Start(bool &Run)
+void Game::Start(bool *Run)
 {
 	if(Players.size()==2)
 	{
 		Log("Game started");
 		Handler=new std::thread(&Game::Play, this, Run);
+		Handler->detach();
 	}
 	else
 	{
@@ -40,7 +41,7 @@ std::vector<std::string> Game::GetLog()
 	return MessageLog;
 }
 
-void Game::Play(bool &Run) 
+void Game::Play(bool *Run) 
 {
 	// Transmit opponent names
 	for(unsigned int x=0; x<Players.size(); x++)
@@ -55,28 +56,6 @@ void Game::Play(bool &Run)
 	Log("Opponent names transmitted");
 	// Upload settings data
 	UploadSettings();
-	// Send Flag (trigger to Place ships)
-	for(unsigned int x=0; x<Players.size(); x++)
-	{
-		if(!Send(Players[x].ClientSocket, "1"))
-		{
-			LogError("Flag send failed for player "+x);
-			Shutdown();
-			return;
-		}
-	}
-
-	// Receive Flag (Clients have placed ships)
-	for(unsigned int x=0; x<Players.size(); x++)
-	{
-		std::string Flag;
-		if(!Receive(Players[x].ClientSocket, &Flag))
-		{
-			LogError("Flag receive failed for player "+x);
-			Shutdown();
-			return;
-		}
-	}
 
 	// Receive boards
 	for(unsigned int x=0; x<Players.size(); x++)

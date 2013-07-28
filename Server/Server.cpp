@@ -174,18 +174,17 @@ void Server::Start(unsigned int Backlog)
 		if(Accepted.size()>1)
 		{
 			// Create Game and store it
-			Game NewGame(std::vector<Client>(Accepted.begin(), Accepted.begin()+2), GameSettings);
-			Games.push_back(NewGame);
+			Games.push_back(new Game(std::vector<Client>(Accepted.begin(), Accepted.begin()+2), GameSettings));
 			Accepted.erase(Accepted.begin(), Accepted.begin()+2);
 
 			// Start Game
-			Games[Games.size()-1].Start(Run);
+			Games[Games.size()-1]->Start(&Run);
 			std::cout<<"New Game started."<<std::endl;
 
 			// Dispose of finished games
 			for(int x=0; x<(int)Games.size(); x++)
 			{
-				if(Games[(unsigned)x].IsFinished())
+				if(Games[(unsigned)x]->IsFinished())
 				{
 					Games.erase(Games.begin()+x);
 					x--;

@@ -20,12 +20,12 @@ public:
 	Game(std::vector<Client> Players, BattleshipSettings Settings);
 	~Game();
 
-	void Start(bool &Run);
+	void Start(bool *Run);
 
 	bool IsFinished();
 	std::vector<std::string> GetLog();
 private:
-	void Play(bool &Run);
+	void Play(bool *Run);
 
 	bool UploadSettings();
 

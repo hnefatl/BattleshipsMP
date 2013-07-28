@@ -13,12 +13,14 @@
   <ItemGroup>
     <ClCompile Include="BattleshipSettings.cpp" />
     <ClCompile Include="ConsoleControl.cpp" />
+    <ClCompile Include="KeyMonitor.cpp" />
     <ClCompile Include="Networking.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BattleshipSettings.h" />
     <ClInclude Include="ConsoleControl.h" />
+    <ClInclude Include="KeyMonitor.h" />
     <ClInclude Include="Networking.h" />
     <ClInclude Include="ThreadSignal.h" />
     <ClInclude Include="Util.h" />

@@ -32,9 +32,9 @@ private:
 	SOCKET ServerSocket;
 
 	BattleshipSettings GameSettings;
-	std::vector<Game> Games;
+	std::vector<Game *> Games;
 
-	bool &Run;
+	bool Run;
 	unsigned int Backlog;
 };
 

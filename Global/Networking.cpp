@@ -87,14 +87,14 @@ bool ReceivePlain(SOCKET Target, unsigned int Length, std::string *Buffer)
 	{
 		std::string TempString;
 		int Temp=recv(Target, &TempString[0], Length-AmountReceived, NULL);
-		TempString=std::string(TempString.c_str());
-		Received+=std::string(TempString.begin(), TempString.begin()+Temp); // Trim excess characters
 		if(Temp<0)
 		{
 			return false;
 		}
 		else
 		{
+			TempString=std::string(TempString.c_str());
+			Received+=std::string(TempString.begin(), TempString.begin()+Temp); // Trim excess characters
 			AmountReceived+=Temp;
 		}
 	}
